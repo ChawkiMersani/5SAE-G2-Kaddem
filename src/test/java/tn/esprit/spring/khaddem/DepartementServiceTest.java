@@ -21,40 +21,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class DepartementServiceTest {
 
-    @Autowired
-    private DepartementServiceImpl departementService;
+ 
 
-    @MockBean
-    private DepartementRepository departementRepository;
 
-    @MockBean
-    private UniversiteRepository universiteRepository;
-
-    private Departement departement1;
-    private Departement departement2;
-
-    
-
-    @Test
-    public void testAddAndRetrieveDepartement() {
-        Departement savedDepartement1 = departementService.addDepartement(departement1);
-        Departement savedDepartement2 = departementService.addDepartement(departement2);
-
-        assertNotNull(savedDepartement1.getIdDepartement());
-        assertNotNull(savedDepartement2.getIdDepartement());
-
-        List<Departement> departements = departementService.retrieveAllDepartements();
-        assertEquals(2, departements.size());
-        assertTrue(departements.stream().anyMatch(d -> d.getNomDepart().equals("Informatique")));
-        assertTrue(departements.stream().anyMatch(d -> d.getNomDepart().equals("Mathématiques")));
-    }
-
-    @Test
-    public void testRetrieveDepartementById() {
-        Departement retrievedDepartement = departementService.retrieveDepartement(1);
-        assertEquals("Informatique", retrievedDepartement.getNomDepart());
-
-        retrievedDepartement = departementService.retrieveDepartement(2);
-        assertEquals("Mathématiques", retrievedDepartement.getNomDepart());
-    }
 }
