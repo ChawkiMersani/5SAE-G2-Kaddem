@@ -33,29 +33,7 @@ public class DepartementServiceTest {
     private Departement departement1;
     private Departement departement2;
 
-    @BeforeEach
-    public void setup() {
-
-        departement1 = new Departement();
-        departement1.setIdDepartement(1);
-        departement1.setNomDepart("Informatique");
-
-        departement2 = new Departement();
-        departement2.setIdDepartement(2);
-        departement2.setNomDepart("Mathématiques");
-
-        when(departementRepository.save(any(Departement.class))).thenAnswer(invocation -> {
-            Departement saved = invocation.getArgument(0);
-            if (saved.getIdDepartement() == null) {
-                saved.setIdDepartement(new Random().nextInt());
-            }
-            return saved;
-        });
-
-        when(departementRepository.findAll()).thenReturn(Arrays.asList(departement1, departement2));
-        when(departementRepository.findById(1)).thenReturn(Optional.of(departement1));
-        when(departementRepository.findById(2)).thenReturn(Optional.of(departement2));
-    }
+    
 
     @Test
     public void testAddAndRetrieveDepartement() {
