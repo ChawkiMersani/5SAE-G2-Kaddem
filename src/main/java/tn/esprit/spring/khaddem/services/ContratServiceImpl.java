@@ -12,6 +12,7 @@ import tn.esprit.spring.khaddem.repositories.EtudiantRepository;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
@@ -39,8 +40,16 @@ public class ContratServiceImpl implements  IContratService{
     @Override
     public Contrat retrieveContrat(Integer idContrat) {
         log.info("debut methode retrieveContrat");
-        return contratRepository.findById(idContrat).get();
+        return contratRepository.findById(idContrat)
+                .orElseGet(this::createDefaultContrat);
     }
+
+    private Contrat createDefaultContrat() {
+        // Create and return a default Contrat object here
+        // For example:
+        return new Contrat(); // You can customize this to fit your application logic
+    }
+
 
     @Override
     public void removeContrat(Integer idContrat) {
