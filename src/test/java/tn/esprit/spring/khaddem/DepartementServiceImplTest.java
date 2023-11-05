@@ -1,4 +1,4 @@
-package tn.esprit.spring.khaddem.services;
+package tn.esprit.spring.khaddem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import tn.esprit.spring.khaddem.entities.Departement;
 import tn.esprit.spring.khaddem.repositories.DepartementRepository;
+import tn.esprit.spring.khaddem.services.DepartementServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class DepartementServiceImplTest {
+public class DepartementServiceImplTest {
 
     @InjectMocks
     DepartementServiceImpl departementService;
@@ -41,7 +42,7 @@ class DepartementServiceImplTest {
     }
 
     @Test
-    void testRetrieveAllDepartements() {
+    public void testRetrieveAllDepartements() {
         List<Departement> departements = departementService.retrieveAllDepartements();
 
         assertEquals(2, departements.size());
@@ -50,7 +51,7 @@ class DepartementServiceImplTest {
     }
 
     @Test
-    void testAddDepartement() {
+    public void testAddDepartement() {
         Departement newDepartement = new Departement();
         newDepartement.setNomDepart("Physics");
 
