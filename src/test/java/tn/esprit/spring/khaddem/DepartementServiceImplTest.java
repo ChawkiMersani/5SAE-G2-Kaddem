@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class DepartementServiceImplTest {
+class DepartementServiceImplTest {
 
     @InjectMocks
     DepartementServiceImpl departementService;
@@ -41,7 +41,7 @@ public class DepartementServiceImplTest {
     }
 
     @Test
-    public void testRetrieveAllDepartements() {
+    void testRetrieveAllDepartements() {
         List<Departement> departements = departementService.retrieveAllDepartements();
 
         assertEquals(2, departements.size());
@@ -50,7 +50,7 @@ public class DepartementServiceImplTest {
     }
 
     @Test
-    public void testAddDepartement() {
+    void testAddDepartement() {
         Departement newDepartement = new Departement();
         newDepartement.setNomDepart("Physics");
 

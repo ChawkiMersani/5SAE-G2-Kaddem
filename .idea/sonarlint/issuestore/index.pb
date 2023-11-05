@@ -7,3 +7,5 @@ l
 <src/main/java/tn/esprit/spring/khaddem/entities/Contrat.java,2/c/2c451f527f9c0b997e691c3e93a24e6a1e679bb7
 w
 Gsrc/main/java/tn/esprit/spring/khaddem/services/ContratServiceImpl.java,1/f/1ffe262459eb9e02118903aebc69d3cab99ccf8e
+7
+pom.xml,4/4/442292b8a7efeabbe4cc176709b833b1792140ec
