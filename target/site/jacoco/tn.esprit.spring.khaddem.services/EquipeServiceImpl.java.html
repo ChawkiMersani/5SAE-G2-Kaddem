@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EquipeServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">khaddem</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.spring.khaddem.services</a> &gt; <span class="el_source">EquipeServiceImpl.java</span></div><h1>EquipeServiceImpl.java</h1><pre class="source lang-java linenums">package tn.esprit.spring.khaddem.services;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import tn.esprit.spring.khaddem.entities.Contrat;
+import tn.esprit.spring.khaddem.entities.Equipe;
+import tn.esprit.spring.khaddem.entities.Etudiant;
+import tn.esprit.spring.khaddem.entities.Niveau;
+import tn.esprit.spring.khaddem.repositories.ContratRepository;
+import tn.esprit.spring.khaddem.repositories.EquipeRepository;
+
+import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
+
+@Service
+<span class="nc" id="L19">@AllArgsConstructor</span>
+<span class="nc" id="L20">@Slf4j</span>
+public class EquipeServiceImpl implements IEquipeService{
+
+    EquipeRepository equipeRepository;
+
+    ContratRepository contratRepository;
+
+    @Override
+    public List&lt;Equipe&gt; retrieveAllEquipes() {
+<span class="nc" id="L29">        return equipeRepository.findAll();</span>
+    }
+
+    @Transactional
+    public Equipe addEquipe(Equipe e) {
+
+<span class="nc" id="L35">        equipeRepository.save(e);</span>
+<span class="nc" id="L36">        return e;</span>
+    }
+
+    @Override
+    public Equipe updateEquipe(Equipe e) {
+<span class="nc" id="L41">        equipeRepository.save(e);</span>
+<span class="nc" id="L42">        return e;</span>
+    }
+
+    @Override
+    public Equipe retrieveEquipe(Integer idEquipe) {
+<span class="nc" id="L47">        return   equipeRepository.findById(idEquipe).get();</span>
+    }
+
+    public void evoluerEquipes(){
+<span class="nc" id="L51">        log.info(&quot;debut methode evoluerEquipes&quot;);</span>
+        // t1 : recuperer date a linstant t1
+<span class="nc" id="L53">        List&lt;Equipe&gt; equipes = (List&lt;Equipe&gt;) equipeRepository.findAll();</span>
+<span class="nc" id="L54">        log.debug(&quot;nombre equipes : &quot;+equipes.size());</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        for (Equipe equipe : equipes) {</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">            if (equipe.getEtudiants()!=null &amp;&amp; equipe.getEtudiants().size() &gt; 0) {</span>
+<span class="nc" id="L57">                log.debug(&quot;vérification niveau équipe&quot;);</span>
+<span class="nc bnc" id="L58" title="All 4 branches missed.">            if ((equipe.getNiveau().equals(Niveau.JUNIOR)) || (equipe.getNiveau().equals(Niveau.SENIOR))) {</span>
+<span class="nc" id="L59">                List&lt;Etudiant&gt; etudiants = equipe.getEtudiants();</span>
+
+<span class="nc" id="L61">                    Integer nbEtudiantsAvecContratsActifs = 0;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                    for (Etudiant etudiant : etudiants) {</span>
+<span class="nc" id="L63">                     log.debug(&quot;in for etudiants&quot;);</span>
+                      //  List&lt;Contrat&gt; contrats = etudiant.getContrats();
+<span class="nc" id="L65">                        List&lt;Contrat&gt; contrats = contratRepository.findByEtudiantIdEtudiant(etudiant.getIdEtudiant())  ;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                        for (Contrat contrat : contrats) {</span>
+<span class="nc" id="L67">                            log.debug(&quot;in contrat&quot;);</span>
+
+<span class="nc" id="L69">                            Date dateSysteme = new Date();</span>
+<span class="nc" id="L70">                            long difference_In_Time = contrat.getDateFinContrat().getTime() -contrat.getDateDebutContrat().getTime() ;</span>
+<span class="nc" id="L71">                            long difference_In_Years = (difference_In_Time / (1000l * 60 * 60 * 24 * 365));</span>
+<span class="nc" id="L72">                            log.debug(&quot;difference_In_Years: &quot;+difference_In_Years);</span>
+<span class="nc bnc" id="L73" title="All 6 branches missed.">                            if ((contrat.getArchived() == null || contrat.getArchived() == false) &amp;&amp; (difference_In_Years &gt; 1)) {</span>
+                                //	contratsActifs.add(contrat);
+<span class="nc" id="L75">                                nbEtudiantsAvecContratsActifs++;</span>
+<span class="nc" id="L76">                                break;</span>
+                            }
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                            if (nbEtudiantsAvecContratsActifs &gt;= 3) break;</span>
+<span class="nc" id="L79">                        }</span>
+// t2 : recuperer date a linstant t2 : te=t2-t1
+<span class="nc" id="L81">                    }</span>
+<span class="nc" id="L82">                    log.info(&quot;nbEtudiantsAvecContratsActifs: &quot; + nbEtudiantsAvecContratsActifs);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                    if (nbEtudiantsAvecContratsActifs &gt;= 3) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                        if (equipe.getNiveau().equals(Niveau.JUNIOR)) {</span>
+<span class="nc" id="L85">                            log.info(&quot;mise a jour du niveau de l equipe &quot; + equipe.getNomEquipe() +</span>
+<span class="nc" id="L86">                                    &quot; du niveau &quot; + equipe.getNiveau() + &quot; vers le niveau supérieur SENIOR&quot;);</span>
+<span class="nc" id="L87">                            equipe.setNiveau(Niveau.SENIOR);</span>
+<span class="nc" id="L88">                            equipeRepository.save(equipe);</span>
+                            // t2 : recuperer date a linstant t2 : te=t2-t1
+<span class="nc" id="L90">                            break;</span>
+                        }
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                        if (equipe.getNiveau().equals(Niveau.SENIOR)) {</span>
+<span class="nc" id="L93">                            log.info(&quot;mise a jour du niveau de l equipe &quot; + equipe.getNomEquipe() +</span>
+<span class="nc" id="L94">                                    &quot; du niveau &quot; + equipe.getNiveau() + &quot; vers le niveau supérieur EXPERT&quot;);</span>
+<span class="nc" id="L95">                            equipe.setNiveau(Niveau.EXPERT);</span>
+<span class="nc" id="L96">                            equipeRepository.save(equipe);</span>
+                            // t2 : recuperer date a linstant t2 : te=t2-t1
+<span class="nc" id="L98">                            break;</span>
+                        }
+                    }
+                }
+
+            }
+<span class="nc" id="L104">        }</span>
+<span class="nc" id="L105">        log.info(&quot;fin methode evoluerEquipes&quot;);</span>
+        // t2 : recuperer date a linstant t2 : te=t2-t1
+<span class="nc" id="L107">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

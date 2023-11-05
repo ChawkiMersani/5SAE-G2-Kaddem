@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ContratServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">khaddem</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.spring.khaddem.services</a> &gt; <span class="el_source">ContratServiceImpl.java</span></div><h1>ContratServiceImpl.java</h1><pre class="source lang-java linenums">package tn.esprit.spring.khaddem.services;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import tn.esprit.spring.khaddem.entities.Contrat;
+import tn.esprit.spring.khaddem.entities.Etudiant;
+import tn.esprit.spring.khaddem.entities.Specialite;
+import tn.esprit.spring.khaddem.repositories.ContratRepository;
+import tn.esprit.spring.khaddem.repositories.EtudiantRepository;
+import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+@Service
+<span class="nc" id="L18">@Slf4j</span>
+<span class="nc" id="L19">@AllArgsConstructor</span>
+public class ContratServiceImpl implements  IContratService{
+
+
+
+    ContratRepository contratRepository;
+    EtudiantRepository etudiantRepository;
+
+    @Override
+    public List&lt;Contrat&gt; retrieveAllContrats() {
+<span class="nc" id="L29">        log.info(&quot;debut methode retrieveAllContrats&quot;);</span>
+<span class="nc" id="L30">        return contratRepository.findAll();</span>
+    }
+
+    @Override
+    public Contrat updateContrat(Contrat ce) {
+<span class="nc" id="L35">        log.info(&quot;debut methode updateContrat&quot;);</span>
+<span class="nc" id="L36">        contratRepository.save(ce);</span>
+<span class="nc" id="L37">        return ce;</span>
+    }
+
+    @Override
+    public Contrat retrieveContrat(Integer idContrat) {
+<span class="nc" id="L42">        log.info(&quot;debut methode retrieveContrat&quot;);</span>
+<span class="nc" id="L43">        return contratRepository.findById(idContrat)</span>
+<span class="nc" id="L44">                .orElseGet(this::createDefaultContrat);</span>
+    }
+
+    private Contrat createDefaultContrat() {
+        // Create and return a default Contrat object here
+        // For example:
+<span class="nc" id="L50">        return new Contrat(); // You can customize this to fit your application logic</span>
+    }
+
+
+    @Override
+    public void removeContrat(Integer idContrat) {
+<span class="nc" id="L56">        log.info(&quot;debut methode removeContrat&quot;);</span>
+<span class="nc" id="L57">        contratRepository.deleteById(idContrat);</span>
+<span class="nc" id="L58">    }</span>
+
+    @Override
+    public Contrat addContrat(Contrat c) {
+       // start date t1
+<span class="nc" id="L63">        contratRepository.save(c);</span>
+
+        // te =t2-t1;
+<span class="nc" id="L66">        return c;</span>
+    }
+
+    @Transactional
+    public Contrat addAndAffectContratToEtudiant(Contrat ce, String nomE, String prenomE) {
+<span class="nc" id="L71">        Long startDate = new Date().getTime();</span>
+<span class="nc" id="L72">        log.info(&quot;startDate: &quot;+startDate);</span>
+<span class="nc" id="L73">        log.info(&quot;debut methode addAndAffectContratToEtudiant&quot;);</span>
+<span class="nc" id="L74">        Etudiant etudiant=etudiantRepository.findByNomEAndPrenomE(nomE,prenomE);</span>
+<span class="nc" id="L75">        log.info(&quot;etudiant: &quot;+etudiant.getNomE()+&quot; &quot;+etudiant.getPrenomE());</span>
+        // nb contrats actifs
+<span class="nc" id="L77">        Integer nbContratsActifs= etudiant.getContrats().size();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if(nbContratsActifs&gt;5) {</span>
+<span class="nc" id="L79">            log.info(&quot;nombre de contrats autorisés est atteint&quot;);</span>
+<span class="nc" id="L80">            Long endDate = new Date().getTime();</span>
+<span class="nc" id="L81">            Long executionTime = endDate-startDate;</span>
+<span class="nc" id="L82">            log.info(&quot;endDate: &quot;+startDate);</span>
+<span class="nc" id="L83">            log.info(&quot;executionTime: &quot;+executionTime+ &quot; ms&quot;);</span>
+<span class="nc" id="L84">            return ce;</span>
+        }
+<span class="nc" id="L86">        log.info(&quot;nb Contrats en cours: &quot;+nbContratsActifs);</span>
+<span class="nc" id="L87">        contratRepository.save(ce);</span>
+<span class="nc" id="L88">        ce.setEtudiant(etudiant);</span>
+<span class="nc" id="L89">        log.info(&quot;fin methode addAndAffectContratToEtudiant&quot;);</span>
+<span class="nc" id="L90">        Long endDate = new Date().getTime();</span>
+<span class="nc" id="L91">        Long executionTime = endDate-startDate;</span>
+
+<span class="nc" id="L93">        log.info(&quot;endDate: &quot;+startDate);</span>
+<span class="nc" id="L94">        log.info(&quot;executionTime: &quot;+executionTime+ &quot; ms&quot;);</span>
+
+<span class="nc" id="L96">        return ce;</span>
+    }
+
+    public 	Integer nbContratsValides(Date startDate, Date endDate){
+<span class="nc" id="L100">        return contratRepository.getnbContratsValides(startDate, endDate);</span>
+    }
+
+    public void retrieveAndUpdateStatusContrat(){
+<span class="nc" id="L104">        log.info(&quot;debut methode retrieveAndUpdateStatusContrat&quot;);</span>
+<span class="nc" id="L105">        List&lt;Contrat&gt;contrats=contratRepository.findAll();</span>
+<span class="nc" id="L106">        log.info(&quot;total contrats :&quot;+contrats.size());</span>
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        for (Contrat contrat : contrats) {</span>
+<span class="nc" id="L109">            log.info(&quot;id: &quot;+contrat.getIdContrat());</span>
+<span class="nc" id="L110">            log.info(&quot;date fin&quot;+contrat.getDateFinContrat());</span>
+<span class="nc" id="L111">            log.info(&quot;archived &quot;+contrat.getArchived());</span>
+
+<span class="nc" id="L113">            Date dateSysteme = new Date();</span>
+
+<span class="nc bnc" id="L115" title="All 4 branches missed.">            if (contrat.getArchived()==null || contrat.getArchived()==false) {</span>
+<span class="nc" id="L116">                long difference_In_Time = contrat.getDateFinContrat().getTime()-dateSysteme.getTime();</span>
+<span class="nc" id="L117">                long difference_In_Days = (difference_In_Time / (1000 * 60 * 60 * 24)) % 365;</span>
+                // il est préférable d'utiliser des méthodes prédéfinis de comparaison
+<span class="nc" id="L119">               log.info(&quot;difference in days : &quot;+difference_In_Days);</span>
+             //     if (difference_In_Days&gt;=0 &amp;&amp; difference_In_Days&lt;=15){  // entre 0 et  15 jours exactement
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                    if (difference_In_Days==15){  // pour 15 jours exactement</span>
+<span class="nc" id="L122">                    log.info(&quot; Contrat Commencant le : &quot; + contrat.getDateDebutContrat()+&quot;pour l'etudiant &quot;+contrat.getEtudiant().getNomE()+</span>
+<span class="nc" id="L123">                            &quot; &quot;+contrat.getEtudiant().getPrenomE()+&quot;  va bientot s achever le &quot;</span>
+<span class="nc" id="L124">                    +contrat.getDateFinContrat());</span>
+                }
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                if (difference_In_Days==0) {</span>
+<span class="nc" id="L127">                    log.info(&quot;jour j: &quot; + contrat.getIdContrat());</span>
+<span class="nc" id="L128">                    contrat.setArchived(true);</span>
+<span class="nc" id="L129">                    contratRepository.save(contrat);</span>
+                }
+            }
+
+<span class="nc" id="L133">            log.info(&quot;debut methode retrieveAndUpdateStatusContrat&quot;);</span>
+<span class="nc" id="L134">        }</span>
+<span class="nc" id="L135">    }</span>
+    public float getChiffreAffaireEntreDeuxDates(Date startDate, Date endDate){
+<span class="nc" id="L137">        float difference_In_Time = endDate.getTime() - startDate.getTime();</span>
+<span class="nc" id="L138">        float difference_In_Days = (difference_In_Time / (1000 * 60 * 60 * 24)) % 365;</span>
+<span class="nc" id="L139">        float difference_In_months =difference_In_Days/30;</span>
+<span class="nc" id="L140">        List&lt;Contrat&gt; contrats=contratRepository.findAll();</span>
+<span class="nc" id="L141">        float chiffreAffaireEntreDeuxDates=0;</span>
+<span class="nc" id="L142">        float chiffreAffaireEntreDeuxDatesIA=0;</span>
+<span class="nc" id="L143">        float chiffreAffaireEntreDeuxDatesCloud=0;</span>
+<span class="nc" id="L144">        float chiffreAffaireEntreDeuxDatesReseau=0;</span>
+<span class="nc" id="L145">        float chiffreAffaireEntreDeuxDatesSecurite=0;</span>
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        for (Contrat contrat : contrats) {</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">            if (contrat.getSpecialite()== Specialite.IA){</span>
+<span class="nc" id="L149">                chiffreAffaireEntreDeuxDates+=(difference_In_months*contrat.getMontantContrat());</span>
+<span class="nc" id="L150">                chiffreAffaireEntreDeuxDatesIA+=(difference_In_months*contrat.getMontantContrat());</span>
+
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            } else if (contrat.getSpecialite()== Specialite.CLOUD) {</span>
+<span class="nc" id="L153">                chiffreAffaireEntreDeuxDates+=(difference_In_months*contrat.getMontantContrat());</span>
+<span class="nc" id="L154">                chiffreAffaireEntreDeuxDatesCloud+=(difference_In_months*contrat.getMontantContrat());</span>
+            }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            else if (contrat.getSpecialite()== Specialite.RESEAU) {</span>
+<span class="nc" id="L157">                chiffreAffaireEntreDeuxDates+=(difference_In_months*contrat.getMontantContrat());</span>
+<span class="nc" id="L158">                chiffreAffaireEntreDeuxDatesReseau+=(difference_In_months*contrat.getMontantContrat());</span>
+
+            }
+<span class="nc bnc" id="L161" title="All 2 branches missed.">            else if (contrat.getSpecialite()== Specialite.SECURITE)</span>
+            {
+<span class="nc" id="L163">                chiffreAffaireEntreDeuxDates+=(difference_In_months*contrat.getMontantContrat());</span>
+<span class="nc" id="L164">                chiffreAffaireEntreDeuxDatesSecurite+=(difference_In_months*contrat.getMontantContrat());</span>
+
+            }
+<span class="nc" id="L167">        }</span>
+<span class="nc" id="L168">        log.info(&quot;chiffreAffaireEntreDeuxDates: &quot;+chiffreAffaireEntreDeuxDates);</span>
+<span class="nc" id="L169">        log.info(&quot;chiffreAffaireEntreDeuxDatesIA:&quot; +chiffreAffaireEntreDeuxDatesIA);</span>
+<span class="nc" id="L170">        log.info(&quot;chiffreAffaireEntreDeuxDatesCloud &quot;+chiffreAffaireEntreDeuxDatesCloud);</span>
+<span class="nc" id="L171">        log.info(&quot;chiffreAffaireEntreDeuxDatesReseau &quot;+chiffreAffaireEntreDeuxDatesReseau);</span>
+<span class="nc" id="L172">        log.info(&quot;chiffreAffaireEntreDeuxDatesSecurite &quot;+chiffreAffaireEntreDeuxDatesSecurite);</span>
+<span class="nc" id="L173">        return chiffreAffaireEntreDeuxDates;</span>
+
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
