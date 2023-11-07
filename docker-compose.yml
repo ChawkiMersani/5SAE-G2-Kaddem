@@ -7,10 +7,9 @@ services:
       - SYS_NICE
     restart: always
     environment:
-        - MYSQL_ROOT_PASSWORD=
-        - MYSQL_DATABASE=khaddemapp
-        - MYSQL_USER=root
-        - MYSQL_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_DATABASE=khaddemapp
     ports:
       - '3306:3306'
     volumes:
@@ -23,6 +22,7 @@ services:
     build: .
     ports:
       - 8089:8089
+
     depends_on:
       - db
 
